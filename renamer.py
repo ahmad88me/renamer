@@ -8,14 +8,15 @@ if len(sys.argv) != 2:
     exit(1)
 
 dir_name = sys.argv[1]
-for filename in os.listdir(dir_name):
-    if "." in filename:
-        name_part = filename.split(".")[0]
-        ext_part = "".join(filename.split(".")[1:])
-        if name_part.isdigit() and int(name_part) < 10:
-            new_name_part = "0"+str(int(name_part))
-            os.rename(filename, new_name_part+"."+ext_part)
 
-
-
-
+for root, dirs, files in os.walk(dir_name, topdown=False):
+    for filename in files:
+        if "." in filename:
+            name_part = filename.split(".")[0]
+            ext_part = "".join(filename.split(".")[1:])
+            if name_part.isdigit() and int(name_part) < 10:
+                new_name_part = "0"+str(int(name_part))
+                new_filename = new_name_part+"."+ext_part
+                old_dir_name = os.path.join(root, filename)
+                new_dir_name = os.path.join(root, new_filename)
+                os.rename(old_dir_name, new_dir_name)
