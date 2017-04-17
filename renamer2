@@ -1,0 +1,61 @@
+import sys
+import os
+
+print sys.argv
+
+if len(sys.argv) != 2:
+    print "You should pass the name the of the directory"
+    exit(1)
+
+
+
+def sep_const_and_num_parts(name_part):
+    const_part = ""
+    num_part = ""
+    if len(name_part) <1:
+        return None, None
+    if not name_part[-1].isdigit():
+        print "the name part of the file name does not end with a digit"
+        return None, None
+    
+    for idx in reversed(range(len(name_part))):
+        if name_part[idx].isdigit():
+            num_part =  name_part[idx] + num_part
+        else:
+            const_part = name_part[0:idx+1]
+            break
+    return const_part, num_part
+            
+                
+
+            
+    
+    
+dir_name = sys.argv[1]
+
+for root, dirs, files in os.walk(dir_name, topdown=False):
+    for filename in files:
+        if "." in filename:
+            print "working on %s" % filename
+            name_part = filename.split(".")[0]
+            ext_part = "".join(filename.split(".")[1])
+            const_part, num_part = sep_const_and_num_parts(name_part)
+            if const_part is None or num_part is None:
+                "will skip this file: %s" %filename
+                break
+            print "const_part: %s, num_part: %s" % (const_part, num_part)
+            if num_part.isdigit() and int(num_part) < 100:
+                print "ext_part: "+ext_part
+                if int(num_part) < 10:
+                    new_name_part = "00"+str(int(num_part))
+                else:
+                    new_name_part = "0"+str(int(num_part))
+                new_name_part = const_part + new_name_part
+                new_filename = new_name_part+"."+ext_part
+                print "new_file_name: "+new_filename
+                old_dir_name = os.path.join(root, filename)
+                new_dir_name = os.path.join(root, new_filename)
+                try:
+                    os.rename(old_dir_name, new_dir_name)
+                except:
+                    print "error in renaming: "+old_dir_name
